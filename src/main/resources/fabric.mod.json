@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "patchwork-runtime",
+  "version": "0.0.1",
+
+  "name": "Patchwork Runtime",
+  "description": "A mod to run patchwork-patcher at minecraft runtime.",
+  "authors": [
+    "WalkerKnapp"
+  ],
+
+  "license": "LGPL-2.1-only",
+
+  "environment": "*",
+  "entrypoints": {
+    "gfh:prePrePreLaunch": [
+      "net.patchworkmc.runtime.PreLaunchEntrypoint"
+    ]
+  }
+}

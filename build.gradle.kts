@@ -10,6 +10,9 @@ version = "0.0.1"
 
 repositories {
     mavenCentral()
+    maven {
+        setUrl("https://dl.bintray.com/user11681/maven")
+    }
 }
 
 dependencies {
@@ -17,6 +20,8 @@ dependencies {
     mappings("net.fabricmc:yarn:1.14.4+build.16:v2")
 
     modImplementation("net.fabricmc:fabric-loader:0.10.0+build.208")
+    include("net.devtech:grossfabrichacks:7.4")
+    modApi("net.devtech:grossfabrichacks:7.4")
 }
 
 java {
