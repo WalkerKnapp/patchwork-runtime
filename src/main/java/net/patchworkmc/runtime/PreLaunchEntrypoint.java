@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 
 public class PreLaunchEntrypoint implements PrePrePreLaunch {
@@ -27,9 +26,13 @@ public class PreLaunchEntrypoint implements PrePrePreLaunch {
 
         logger.info(":ohno: Runtime-patching forge mods :ohno:");
 
+        RuntimePatcher runtimePatcher = new RuntimePatcher(loader);
+
         int oldModCount = FabricLoaderInterface.getModCount(loader);
 
-        loadMod(loader, Paths.get("multarumore-1.1.0+1.14.4.jar"));
+        for (Path modJar : runtimePatcher.patchMods()) {
+            loadMod(loader, modJar);
+        }
 
         FabricLoaderInterface.setModCount(loader, oldModCount);
     }

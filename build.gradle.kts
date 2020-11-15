@@ -1,7 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.ow2.asm:asm:9.0")
+    }
+}
+
 plugins {
     java
     `maven-publish`
     id("fabric-loom") version "0.5-SNAPSHOT"
+    id("org.anarres.jarjar") version "1.0.1"
+    //id("net.vrallev.jarjar") version "1.0.0"
 }
 
 base.archivesBaseName = "patchwork-runtime"
@@ -28,7 +40,12 @@ dependencies {
     include("net.devtech:grossfabrichacks:7.4")
     modApi("net.devtech:grossfabrichacks:7.4")
 
-    implementation("com.github.PatchworkMC:patchwork-patcher:baf0ad124e")
+    compileOnly("com.github.PatchworkMC:patchwork-patcher:baf0ad124e")
+    runtimeOnly(jarjar.repackage(closureOf<org.anarres.gradle.plugin.jarjar.JarjarTask> {
+        from("com.github.PatchworkMC:patchwork-patcher:baf0ad124e")
+
+        classRename("com.google.**", "net.patchworkmc.patcher.com.google.@1")
+    }))
 }
 
 java {
@@ -57,13 +74,13 @@ tasks.withType(Jar::class).configureEach {
     }
 }
 
-tasks.withType(ProcessResources::class).configureEach {
+/*tasks.withType(ProcessResources::class).configureEach {
     inputs.property("version", project.version)
 
     filesMatching("fabric.mod.json") {
         expand(mapOf("version" to project.version))
     }
-}
+}*/
 
 tasks.withType(JavaCompile::class).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
