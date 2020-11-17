@@ -16,5 +16,10 @@
     "gfh:prePrePreLaunch": [
       "net.patchworkmc.runtime.PreLaunchEntrypoint"
     ]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.10.0",
+    "patchwork": ">=0.10.0"
   }
 }

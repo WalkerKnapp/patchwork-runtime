@@ -26,23 +26,25 @@ repositories {
         setUrl("https://dl.bintray.com/user11681/maven")
     }
     maven {
-        setUrl("https://jitpack.io")
+        setUrl("https://dl.bintray.com/patchworkmc/Patchwork-Maven/")
+    }
+    maven {
+        setUrl("https://jitpack.io/")
     }
 }
 
 dependencies {
     minecraft("com.mojang:minecraft:1.14.4")
     mappings("net.fabricmc:yarn:1.14.4+build.16:v2")
-
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.15.1+build.260-1.14")
     modImplementation("net.fabricmc:fabric-loader:0.10.0+build.208")
 
     include("net.devtech:grossfabrichacks:7.4")
     modApi("net.devtech:grossfabrichacks:7.4")
 
-    compileOnly("com.github.PatchworkMC:patchwork-patcher:baf0ad124e")
-    runtimeOnly(jarjar.repackage(closureOf<org.anarres.gradle.plugin.jarjar.JarjarTask> {
-        from("com.github.PatchworkMC:patchwork-patcher:baf0ad124e")
+    implementation("net.patchworkmc:patchwork-manifest:0.5.0")
+    compileOnly("com.github.WalkerKnapp:patchwork-patcher:0bf6e35816")
+    implementation(jarjar.repackage(closureOf<org.anarres.gradle.plugin.jarjar.JarjarTask> {
+        from("com.github.WalkerKnapp:patchwork-patcher:0bf6e35816")
 
         classRename("com.google.**", "net.patchworkmc.patcher.com.google.@1")
     }))

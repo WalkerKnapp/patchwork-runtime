@@ -5,8 +5,6 @@ import com.mojang.bridge.game.GameVersion;
 import net.fabricmc.loader.FabricLoader;
 import net.fabricmc.loader.util.FileSystemUtil;
 import net.minecraft.SharedConstants;
-import net.patchworkmc.manifest.mod.ManifestParseException;
-import net.patchworkmc.manifest.mod.ModManifest;
 import net.patchworkmc.patcher.Patchwork;
 import net.patchworkmc.patcher.util.MinecraftVersion;
 import net.patchworkmc.runtime.cache.PatchworkCache;
@@ -33,7 +31,6 @@ public class RuntimePatcher {
 
     private final Path inputDir;
     private final Path outputDir;
-    private final Path dataDir;
 
     private final PatchworkCache cache;
 
@@ -43,7 +40,7 @@ public class RuntimePatcher {
 
             inputDir = patchworkCacheDir.resolve("unpatched");
             outputDir = patchworkCacheDir.resolve("patched");
-            dataDir = patchworkCacheDir.resolve("data");
+            Path dataDir = patchworkCacheDir.resolve("data");
 
             loader = fabricLoader;
             patchwork = Patchwork.create(inputDir, outputDir, dataDir, getVersion());
@@ -72,17 +69,28 @@ public class RuntimePatcher {
                     .filter(modPath -> modPath.toString().endsWith("jar"))
                     .filter(modPath -> {
                         try {
-                            try (FileSystem fs = FileSystemUtil.getJarFileSystem(modPath, false).get()) {
-                                Path manifestPath = fs.getPath("/META-INF/mods.toml");
+                            // TODO: This is stupid, but manually doing:
+                            // FileConfig toml = FileConfig.of(manifestPath)
+                            // creates a FileConfig that ModManifest#parse doesn't like
+                            // Classes that should extend AbstractConfig fail "instanceof AbstractConfig" checks
+                            // (maybe because of a dependency conflict of com.electronwill.nightconfig?)
+                            //return PatchworkInterface.parseModManifest(patchwork, modPath).getManifest().getModLoader().equals("javafml");
+
+                            try (FileSystemUtil.FileSystemDelegate fs = FileSystemUtil.getJarFileSystem(modPath, false)) {
+                                Path manifestPath = fs.get().getPath("/META-INF/mods.toml");
 
                                 FileConfig toml = FileConfig.of(manifestPath);
                                 toml.load();
 
                                 Map<String, Object> map = toml.valueMap();
-                                ModManifest manifest = ModManifest.parse(map);
-                                return manifest.getModLoader().equals("javafml");
+
+                                Object modLoader = map.get("modLoader");
+                                return modLoader instanceof String && modLoader.equals("javafml");
+
+                                //ModManifest manifest = ModManifest.parse(map);
+                                //return manifest.getModLoader().equals("javafml");
                             }
-                        } catch (IOException | ManifestParseException e) {
+                        } catch (IOException e) {
                             return false;
                         }
                     });

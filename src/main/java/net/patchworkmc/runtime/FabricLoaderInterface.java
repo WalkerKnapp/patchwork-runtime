@@ -15,10 +15,10 @@ import java.util.List;
 public class FabricLoaderInterface {
     private static final Logger logger = LogManager.getLogger("patchwork-runtime");
 
-    private static Method addModMethod;
-    private static Field modsField;
+    private static final Method addModMethod;
+    private static final Field modsField;
 
-    private static Field abstractListModCount;
+    private static final Field abstractListModCount;
 
     static {
         try {
@@ -32,6 +32,7 @@ public class FabricLoaderInterface {
             abstractListModCount.setAccessible(true);
         } catch (NoSuchMethodException | NoSuchFieldException e) {
             logger.error("Failed to get reference to fabric-loader internals. The fabric-loader version may be incompatible with patchwork-runtime.", e);
+            throw new IllegalStateException(e);
         }
     }
 
