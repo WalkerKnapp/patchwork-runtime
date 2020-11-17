@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 
 public class PreLaunchEntrypoint implements PrePrePreLaunch {
@@ -24,13 +25,17 @@ public class PreLaunchEntrypoint implements PrePrePreLaunch {
     public void onPrePrePreLaunch() {
         FabricLoader loader = FabricLoader.INSTANCE;
 
-        logger.info(":ohno: Runtime-patching forge mods :ohno:");
+        logger.info(":ohno: Runtime-patching Forge mods :ohno:");
 
         RuntimePatcher runtimePatcher = new RuntimePatcher(loader);
 
+        Collection<Path> patchedMods = runtimePatcher.patchMods();
+
+        logger.info("Loading " + patchedMods.size() + " patched Forge mods.");
+
         int oldModCount = FabricLoaderInterface.getModCount(loader);
 
-        for (Path modJar : runtimePatcher.patchMods()) {
+        for (Path modJar : patchedMods) {
             loadMod(loader, modJar);
         }
 

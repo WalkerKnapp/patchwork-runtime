@@ -130,6 +130,11 @@ public class RuntimePatcher {
             }
         }
 
+        // If we have nothing left to patch, don't deal with Patcher at all
+        if (remainingForgeJars.isEmpty()) {
+            return patchedJars;
+        }
+
         // Patch the jars we have remaining
         try {
             Files.list(inputDir).forEach(p -> {
